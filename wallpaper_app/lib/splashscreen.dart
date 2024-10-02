@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'LoginScreen.dart' as login;
 
-import 'HomeScreen.dart';
-
 class SplashScreen extends StatefulWidget {
   @override
   _SplashScreenState createState() => _SplashScreenState();

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async'; // For Timer
 import 'package:firebase_core/firebase_core.dart'; // Import Firebase Core
 import 'package:wallpaper_app/registration_screen.dart';
 import 'package:wallpaper_app/splashscreen.dart';
