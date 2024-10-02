@@ -17,6 +17,7 @@ dependencies:
   cached_network_image: ^3.2.2
   http: ^1.2.2
   wallpaper_manager_flutter: ^0.0.2
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_lints: ^4.0.0

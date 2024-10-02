@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import 'package:wallpaper_manager_flutter/wallpaper_manager_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 
 class WallpaperHomePage extends StatefulWidget {
   @override
@@ -13,6 +14,7 @@ class WallpaperHomePage extends StatefulWidget {
 class _WallpaperHomePageState extends State<WallpaperHomePage> {
   List<String> wallpapers = [];
   bool isLoading = true;
+  File? _selectedImage; // Holds the image selected from the gallery
 
   // Sample categories
   List<String> categories = [
@@ -35,9 +37,9 @@ class _WallpaperHomePageState extends State<WallpaperHomePage> {
   }
 
   Future<void> fetchWallpapers(String category) async {
-    // You might need to adjust the API URL for category filtering.
     final response = await http.get(
-      Uri.parse('https://api.unsplash.com/photos/random?count=30&client_id=a0gCuCC7ggEckgzSBh5lCbfMEw50--d4W8qq0O7L4ts&query=$category'),
+      Uri.parse(
+          'https://api.unsplash.com/photos/random?count=30&client_id=a0gCuCC7ggEckgzSBh5lCbfMEw50--d4W8qq0O7L4ts&query=$category'),
     );
 
     if (response.statusCode == 200) {
@@ -59,10 +61,87 @@ class _WallpaperHomePageState extends State<WallpaperHomePage> {
       WallpaperManagerFlutter.HOME_SCREEN,
     );
 
-    print('Wallpaper set successfully!');
-    // Optionally show a snackbar or a dialog to inform the user that the wallpaper has been set.
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Wallpaper set successfully!')),
+    );
+  }
+
+  // Method to pick an image from the gallery
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
+  }
+
+  // Method to set the picked image as wallpaper
+  Future<void> _setImageAsWallpaper() async {
+    if (_selectedImage != null) {
+      try {
+        await WallpaperManagerFlutter().setwallpaperfromFile(
+          _selectedImage!,
+          WallpaperManagerFlutter.HOME_SCREEN,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Wallpaper set successfully!')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to set wallpaper')),
+        );
+      }
+    }
+  }
+
+  // Method to show preview of the selected image
+  void _showImagePreview(String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // Get the screen size using MediaQuery
+        var screenSize = MediaQuery.of(context).size;
+
+        return Dialog(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Container to limit the size of the image preview to fit the screen
+              Container(
+                width: screenSize.width * 0.9, // Set width to 90% of the screen width
+                height: screenSize.height * 0.7, // Set height to 70% of the screen height
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  placeholder: (context, url) =>
+                      Center(child: CircularProgressIndicator()),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  setWallpaper(imageUrl);
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: Text('Set as Wallpaper'),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog without setting wallpaper
+                },
+                child: Text('Cancel'),
+              ),
+              SizedBox(height: 10),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -85,7 +164,7 @@ class _WallpaperHomePageState extends State<WallpaperHomePage> {
                   onTap: () {
                     setState(() {
                       selectedCategory = categories[index];
-                      isLoading = true; // Show loading indicator while fetching new wallpapers
+                      isLoading = true;
                       fetchWallpapers(selectedCategory);
                     });
                   },
@@ -122,24 +201,26 @@ class _WallpaperHomePageState extends State<WallpaperHomePage> {
                 crossAxisCount: 2,
                 crossAxisSpacing: 4.0,
                 mainAxisSpacing: 4.0,
-                childAspectRatio: 0.75, // Adjust aspect ratio for better fitting
+                childAspectRatio: 0.75,
               ),
               itemCount: wallpapers.length,
               itemBuilder: (context, index) {
                 return GestureDetector(
-                  onTap: () => setWallpaper(wallpapers[index]),
+                  onTap: () => _showImagePreview(wallpapers[index]), // Show preview on tap
                   child: Container(
-                    height: 150, // Set the height of the image container
+                    height: 150,
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey, width: 2), // Add border around the image
-                      borderRadius: BorderRadius.circular(10), // Rounded corners
+                      border: Border.all(color: Colors.grey, width: 2),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10), // Clip to match border radius
+                      borderRadius: BorderRadius.circular(10),
                       child: CachedNetworkImage(
                         imageUrl: wallpapers[index],
-                        placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
+                        placeholder: (context, url) =>
+                            Center(child: CircularProgressIndicator()),
+                        errorWidget: (context, url, error) =>
+                            Icon(Icons.error),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -148,6 +229,23 @@ class _WallpaperHomePageState extends State<WallpaperHomePage> {
               },
             ),
           ),
+          // Button to pick image from gallery
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed: _pickImage,
+              child: Text('Pick Image from Gallery'),
+            ),
+          ),
+          // If image is selected, show a button to set it as wallpaper
+          if (_selectedImage != null)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: _setImageAsWallpaper,
+                child: Text('Set Selected Image as Wallpaper'),
+              ),
+            ),
         ],
       ),
     );

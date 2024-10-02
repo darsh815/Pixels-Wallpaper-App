@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:async'; // For Timer
 import 'package:firebase_core/firebase_core.dart'; // Import Firebase Core
-import 'firebase_options.dart'; // Ensure this file is properly set up
-import 'LoginScreen.dart'; // Import your login screen
-import 'registration_screen.dart'; // Import your registration screen
-import 'forgot_password_screen.dart'; // Import your forget password screen
+import 'package:wallpaper_app/registration_screen.dart';
+import 'package:wallpaper_app/splashscreen.dart';
+import 'LoginScreen.dart';
+import 'firebase_options.dart';
+import 'forgot_password_screen.dart'; // Ensure this file is properly set up
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,71 +21,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Weather App',
+      title: 'App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       initialRoute: '/', // Splash Screen is set as the initial route
       routes: {
-        '/': (context) => SplashScreen(), // Navigate to SplashScreen first
-        '/SignInScreen': (context) => SignInScreen(), // Navigate to SignInScreen
-        '/RegistrationScreen': (context) => RegistrationScreen(), // Navigate to RegistrationScreen
-        '/ForgetPasswordScreen': (context) => ForgetPasswordScreen(), // Navigate to ForgetPasswordScreen
+        '/': (context) => SplashScreen(), // Default splash screen
+        '/login': (context) => SignInScreen(), // Login page
+        '/register': (context) => RegistrationScreen(), // Registration page
+        '/forgot': (context) => ForgetPasswordScreen(), // Forgot password page
       },
     );
   }
 }
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
-
-  @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-
-    // Using Timer to delay navigation to the SignInScreen after 3 seconds
-    Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, '/SignInScreen'); // Navigate to SignInScreen after 3 seconds
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Container(
-          color: Colors.blue, // Background color for the splash screen
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              // Your app logo or splash image
-              Icon(
-                Icons.cloud, // Example: Weather app icon
-                size: 100.0,
-                color: Colors.white,
-              ),
-              SizedBox(height: 20),
-              Text(
-                'Weather App',
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(height: 10),
-              CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white), // Loading indicator
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

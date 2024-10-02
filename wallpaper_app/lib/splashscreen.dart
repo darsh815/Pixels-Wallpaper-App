@@ -50,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                'assets/OIG.jpeg', // Your splash screen image
+                'assets/splash.jpg', // Your splash screen image
                 height: 600, // Set the desired height
                 width: 2000, // Set the desired width
               ),
