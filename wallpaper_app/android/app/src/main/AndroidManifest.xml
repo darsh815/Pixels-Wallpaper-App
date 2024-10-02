@@ -1,9 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="wallpaper_app"
         android:name="${applicationName}"
+        android:label="wallpaper_app"
         android:icon="@mipmap/ic_launcher">
-        <activity
+
+    <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
