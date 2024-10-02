@@ -1,0 +1,33 @@
+name: wallpaper_app
+description: A new Flutter project.
+
+publish_to: 'none' # Remove this line if you are publishing to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.19.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_core: ^2.14.0
+  firebase_auth: ^4.20.0
+  cloud_firestore: ^4.10.0
+  cached_network_image: ^3.2.2
+  http: ^1.2.2
+  wallpaper_manager_flutter: ^0.0.2
+
+dev_dependencies:
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.13.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/ # Include all assets from this folder
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/OIP.jpeg"
